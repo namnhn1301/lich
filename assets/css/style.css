@@ -1,7 +1,6 @@
 /* Tối ưu hóa giao diện */
 body {
     font-family: 'Arial', sans-serif;
-    background: url('assets/images/background.jpg') no-repeat center center fixed; /* Thay thế đường dẫn của ảnh ở đây */
     background-color: #ffffff;
     color: #000000;
     background-size: cover; /* Để hình ảnh nền bao phủ toàn bộ màn hình */
