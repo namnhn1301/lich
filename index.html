@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thời khóa biểu</title>
+    <link rel="icon" href="assets/images/logo.png" type="image/png">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <!-- Thêm liên kết tới thư viện FullCalendar -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.14/jspdf.plugin.autotable.min.js"></script>
+    <!-- Thư viện jsPDF và AutoTable -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <!-- Font Times New Roman được nhúng sẵn -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/fonts/ttf/times-normal.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+</head>
+<body onload="initPage(); showInfoPopup();">
+<!-- Pop-up lơ lửng hiển thị thông tin ngày và lịch học -->
+<div class="floating-popup" id="info-popup">
+    <div class="popup-content">
+        <h3>THÔNG TIN HÔM NAY</h3>
+        <p id="current-day">Hôm nay là: Đang tải...</p>
+        <p id="holiday-info">Ngày lễ: Đang tải...</p>
+        <p id="today-schedule-info">Lịch học hôm nay: Đang tải...</p>
+        <!-- Thêm ảnh GIF bên dưới thông tin lịch học -->
+        <img id="today-schedule-gif" src="" alt="Lịch học hôm nay" style="max-width: 100%; margin-top: 10px; display: none;">
+        <button onclick="closeInfoPopup()">Đóng</button>
+    </div>
+</div>
+    <!-- Phần liên hệ lơ lửng -->
+<div id="contact-floating">
+    <a href="https://www.facebook.com/imissher1405" target="_blank" id="contact-facebook" title="Liên hệ qua Facebook">
+        <img src="assets/images/facebook.png" alt="Facebook" style="width: 40px; height: 40px;">
+    </a>
+    <a href="tel:0369116099" id="contact-phone" title="Liên hệ qua điện thoại">
+        <img src="assets/images/phone.png" alt="Phone" style="width: 40px; height: 40px;">
+    </a>
+</div>
+    <!--Modal tuyết rơi-->
+    <div class="snowflakes" aria-hidden="true">
+        <div class="snowflake">🌸</div>
+        <div class="snowflake">❆</div>
+        <div class="snowflake">🌸</div>
+        <div class="snowflake">❆</div>
+        <div class="snowflake">🌸</div>
+        <div class="snowflake">❆</div>
+      </div>
+    <!-- Modal xác nhận xóa -->
+    <div class="modal" id="confirm-modal">
+        <p>Bạn có chắc chắn muốn xóa?</p>
+        <div class="modal-buttons">
+            <button class="ok-btn" onclick="confirmDelete()">OK</button>
+            <button class="cancel-btn" onclick="cancelDelete()">Hủy</button>
+        </div>
+    </div>
+    <!-- Thanh tìm kiếm -->
+    <div class="search-container">
+        <input type="text" id="search-subject" placeholder="Tìm kiếm theo môn học..." oninput="searchTable('subject')">
+        <input type="text" id="search-teacher" placeholder="Tìm kiếm theo giáo viên..." oninput="searchTable('teacher')">
+    </div>
+<button id="scroll-to-top" onclick="scrollToTop()">↑</button>
+    <!-- Bảng lịch hoạt động -->
+    <h1 id="schedule-name" style="text-align: center; font-size: 2em; font-weight: bold; color: #ffffff;">
+        Thời Khóa Biểu
+    </h1>
+<!-- Dải chứa thời gian và marquee -->
+<div class="header-strip">
+    <div id="date-time" class="center-time"></div>
+    <div id="weather" class="center-time">Đang tải thời tiết...</div>
+    <div id="led-marquee" class="led-marquee">Trang Web Thời Khóa Biểu Copyright© Nguyễn Hoàng Nam</div>
+</div>
+<div class="schedule-strip">
+    <h3 id="today-schedule">Lịch học hôm nay: <span id="schedule-details">Đang tải...</span></h3>
+</div>
+    <table id="schedule-table">
+        <thead>
+            <tr>
+                <th>Bộ môn</th>
+                <th>GV phụ trách</th>
+                <th>Thời gian học</th>
+                <th>Thứ 2</th>
+                <th>Thứ 3</th>
+                <th>Thứ 4</th>
+                <th>Thứ 5</th>
+                <th>Thứ 6</th>
+                <th>Thứ 7</th>
+                <th>Chủ Nhật</th>
+                <th>Xóa</th>
+                <th>Chỉnh sửa</th>
+            </tr>
+        </thead>
+        <tbody id="schedule-body">
+            <!-- Các dòng dữ liệu thời khóa biểu sẽ được thêm vào đây -->
+        </tbody>
+    </table>
+
+    <!-- Form cập nhật lịch -->
+    <div class="form-container">
+        <h3>Cập nhật Thời khóa biểu</h3>
+        <div class="form-group">
+            <label for="subject">Bộ môn:</label>
+            <input type="text" id="subject" placeholder="Nhập tên bộ môn">
+        </div>
+        <div class="form-group">
+            <label for="teacher">GV phụ trách:</label>
+            <input type="text" id="teacher" placeholder="Nhập tên giáo viên">
+        </div>
+        <div class="form-group">
+            <label for="time">Thời gian học:</label>
+            <input type="time" id="start-time"> đến 
+            <input type="time" id="end-time">
+        </div>
+        <div class="form-group">
+            <label for="monday">Thứ 2:</label>
+            <input type="checkbox" id="monday">
+        </div>
+        <div class="form-group">
+            <label for="tuesday">Thứ 3:</label>
+            <input type="checkbox" id="tuesday">
+        </div>
+        <div class="form-group">
+            <label for="wednesday">Thứ 4:</label>
+            <input type="checkbox" id="wednesday">
+        </div>
+        <div class="form-group">
+            <label for="thursday">Thứ 5:</label>
+            <input type="checkbox" id="thursday">
+        </div>
+        <div class="form-group">
+            <label for="friday">Thứ 6:</label>
+            <input type="checkbox" id="friday">
+        </div>
+        <div class="form-group">
+            <label for="saturday">Thứ 7:</label>
+            <input type="checkbox" id="saturday">
+        </div>
+        <div class="form-group">
+            <label for="sunday">Chủ nhật:</label>
+            <input type="checkbox" id="sunday">
+        </div>
+
+        <!-- Nút cập nhật và xuất CSV -->
+        <div class="form-buttons">
+            <button type="button" onclick="if(validateForm()) { validateAndUpdateSchedule(); }">Cập nhật</button>
+            <button type="button" onclick="exportToCSV()">Xuất CSV</button>
+            <button type="button" onclick="exportToPDF()">Xuất PDF</button>
+        </div>
+<!-- Phần Copyright -->
+<footer style="text-align: center; margin-top: 20px; font-size: 14px; color: #777;">
+    © 2024 Nguyễn Hoàng Nam. All rights reserved.
+</footer>
+<script src="assets/js/script.js"></script>
+</body>
+</html>

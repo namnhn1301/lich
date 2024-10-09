@@ -1,0 +1,630 @@
+/* Tối ưu hóa giao diện */
+body {
+    font-family: 'Arial', sans-serif;
+    background: url('assets/images/background.jpg') no-repeat center center fixed; /* Thay thế đường dẫn của ảnh ở đây */
+    background-color: #ffffff;
+    color: #000000;
+    background-size: cover; /* Để hình ảnh nền bao phủ toàn bộ màn hình */
+    padding: 20px;
+    transition: background 0.5s ease-in-out;
+}
+
+/* Bố cục form và bảng */
+.form-container, .background-upload-container, #history-container {
+    margin: 20px 0;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.form-group label {
+    width: 150px;
+    font-weight: bold;
+}
+
+input, select {
+    flex: 1;
+    border-radius: 8px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+input:focus, select:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+    transition: box-shadow 0.3s ease-in-out;
+}
+
+
+/* Style cho nút */
+button {
+    border-radius: 8px;
+    padding: 10px 15px;
+    border: none;
+    background-color: #3498db;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+button:hover {
+    background-color: #2980b9;
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
+/* Bố cục tìm kiếm */
+.search-container {
+    margin: 20px 0;
+    display: flex;
+    justify-content: space-between;
+}
+
+.search-container input {
+    width: 45%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    transition: box-shadow 0.3s ease-in-out;
+}
+
+.search-container input:focus {
+    box-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
+}
+
+/* Highlight effect for updated rows */
+tr.updated {
+    background-color: #d1ffd1;
+    transition: background-color 1s ease-in-out;
+}
+
+/* Bảng */
+table {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: collapse;
+    background-color: #f9f9f9;
+    color: #000000;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+table:hover {
+    transform: scale(1.01);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    background-color: #f1f1f1;
+    cursor: pointer;
+}
+
+table tr {
+    transition: all 0.3s ease-in-out;
+}
+
+th, td {
+    padding: 12px;
+    text-align: center;
+    border: 1px solid #e0e0e0;
+    transition: background-color 0.3s ease;
+}
+
+th {
+    background-color: #2c3e50; /* Màu đậm */
+    color: #ffffff;
+}
+
+td {
+    background-color: #ffffff; /* Màu sáng */
+    color: #000000;
+}
+
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+tr:hover td {
+    background-color: #f1f1f1;
+}
+
+/* Modal xác nhận xóa - ban đầu bị ẩn */
+.modal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.9);
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 9999;
+    text-align: center;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    opacity: 0;
+}
+
+/* Khi modal hiển thị */
+.modal.show {
+    display: block;
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+/* Các nút trong modal */
+.modal-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.modal-buttons button {
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    transition: background-color 0.3s ease;
+}
+
+.modal-buttons button:hover {
+    background-color: #2980b9;
+}
+
+.modal-buttons .cancel-btn {
+    background-color: #f44336;
+}
+
+.modal-buttons .cancel-btn:hover {
+    background-color: #e74c3c;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .form-group {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .form-group label {
+        margin-bottom: 5px;
+    }
+
+    button {
+        width: 100%;
+        margin: 10px 0;
+    }
+
+    #guide-button {
+        width: 90%; /* Giảm kích thước nút trên màn hình nhỏ */
+    }
+}
+
+/* Center-align and adjust button size */
+.form-buttons {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.form-buttons button {
+    width: 150px;
+    margin: 0 10px;
+}
+
+/* Pop-up thông báo */
+.popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 15px 30px;
+    border-radius: 8px;
+    font-size: 16px;
+    text-align: center;
+    z-index: 10000;
+    opacity: 0;
+    transition: opacity 0.5s, transform 0.5s;
+}
+
+.popup.show {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.1);
+}
+
+/* Success and error styles for notifications */
+.popup.success {
+    background-color: #4caf50; /* Màu xanh lá cho thông báo thành công */
+    color: white;
+}
+
+.popup.error {
+    background-color: #f44336; /* Màu đỏ cho thông báo lỗi */
+    color: white;
+}
+
+.popup button {
+    margin-top: 15px;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #3498db;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.popup button:hover {
+    background-color: #2980b9;
+}
+
+/* Hiệu ứng chuyển màu cho tiêu đề "Thông tin hôm nay" */
+@keyframes colorChange {
+    0% { color: #ff5722; } /* Màu đầu tiên */
+    25% { color: #4caf50; } /* Màu thứ hai */
+    50% { color: #2196f3; } /* Màu thứ ba */
+    75% { color: #9c27b0; } /* Màu thứ tư */
+    100% { color: #ff5722; } /* Quay lại màu đầu tiên */
+}
+
+.popup-content h3 {
+    font-weight: bold; /* In đậm */
+    text-transform: uppercase; /* Viết hoa toàn bộ */
+    font-size: 20px; /* Kích thước chữ */
+    margin-top: 0;
+    animation: colorChange 5s infinite; /* Thực hiện hiệu ứng chuyển màu trong 5 giây và lặp lại */
+}
+
+/* Snowflakes animation */
+@-webkit-keyframes snowflakes-fall {
+    0% {top:-10%}
+    100% {top:100%}
+}
+@-webkit-keyframes snowflakes-shake {
+    0%,100% {-webkit-transform:translateX(0);transform:translateX(0)}
+    50% {-webkit-transform:translateX(80px);transform:translateX(80px)}
+}
+@keyframes snowflakes-fall {
+    0% {top:-10%}
+    100% {top:100%}
+}
+@keyframes snowflakes-shake {
+    0%,100%{ transform:translateX(0)}
+    50% {transform:translateX(80px)}
+}
+.snowflake {
+    color: #fff;
+    font-size: 1em;
+    font-family: Arial, sans-serif;
+    text-shadow: 0 0 5px #000;
+    position:fixed;
+    top:-10%;
+    z-index:9999;
+    -webkit-user-select:none;
+    -moz-user-select:none;
+    -ms-user-select:none;
+    user-select:none;
+    cursor:default;
+    -webkit-animation-name:snowflakes-fall,snowflakes-shake;
+    -webkit-animation-duration:10s,3s;
+    -webkit-animation-timing-function:linear,ease-in-out;
+    -webkit-animation-iteration-count:infinite,infinite;
+    -webkit-animation-play-state:running,running;
+    animation-name:snowflakes-fall,snowflakes-shake;
+    animation-duration:10s,3s;
+    animation-timing-function:linear,ease-in-out;
+    animation-iteration-count:infinite,infinite;
+    animation-play-state:running,running;
+    animation: snowflakes-fall 10s linear infinite, snowflakes-shake 3s ease-in-out infinite, spin 8s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.snowflake:nth-of-type(0){
+    left:1%;-webkit-animation-delay:0s,0s;animation-delay:0s,0s
+}
+.snowflake:nth-of-type(1){
+    left:10%;-webkit-animation-delay:1s,1s;animation-delay:1s,1s
+}
+.snowflake:nth-of-type(2){
+    left:20%;-webkit-animation-delay:6s,.5s;animation-delay:6s,.5s
+}
+.snowflake:nth-of-type(3){
+    left:30%;-webkit-animation-delay:4s,2s;animation-delay:4s,2s
+}
+.snowflake:nth-of-type(4){
+    left:40%;-webkit-animation-delay:2s,2s;animation-delay:2s,2s
+}
+.snowflake:nth-of-type(5){
+    left:50%;-webkit-animation-delay:8s,3s;animation-delay:8s,3s
+}
+.snowflake:nth-of-type(6){
+    left:60%;-webkit-animation-delay:6s,2s;animation-delay:6s,2s
+}
+.snowflake:nth-of-type(7){
+    left:70%;-webkit-animation-delay:2.5s,1s;animation-delay:2.5s,1s
+}
+.snowflake:nth-of-type(8){
+    left:80%;-webkit-animation-delay:1s,0s;animation-delay:1s,0s
+}
+.snowflake:nth-of-type(9){
+    left:90%;-webkit-animation-delay:3s,1.5s;animation-delay:3s,1.5s
+}
+.snowflake:nth-of-type(10){
+    left:25%;-webkit-animation-delay:2s,0s;animation-delay:2s,0s
+}
+.snowflake:nth-of-type(11){
+    left:65%;-webkit-animation-delay:4s,2.5s;animation-delay:4s,2.5s
+}
+
+/* Phần liên hệ lơ lửng ở góc phải dưới */
+#contact-floating {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Tăng khoảng cách giữa các biểu tượng liên hệ */
+    z-index: 1000;
+}
+
+#contact-floating a {
+    text-decoration: none;
+    display: block;
+    width: 40px;
+    height: 40px;
+}
+
+#contact-floating img {
+    width: 100%;
+    height: 100%;
+    transition: transform 0.3s ease;
+}
+
+#contact-floating img:hover {
+    transform: scale(1.1);
+}
+
+.form-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px; /* Khoảng cách giữa các nút */
+    margin-top: 20px;
+}
+
+.form-buttons button {
+    width: 150px;
+    padding: 10px 15px;
+    border-radius: 8px;
+    border: none;
+    background-color: #3498db;
+    color: white;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.form-buttons button:hover {
+    background-color: #2980b9;
+}
+
+.form-buttons button:active {
+    transform: scale(0.98);
+}
+
+.container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.item {
+    flex: 1 1 45%;
+    margin: 10px;
+}
+
+@media (max-width: 768px) {
+    .item {
+        flex: 1 1 100%;
+    }
+}
+
+table tr:hover {
+    background-color: #f1f1f1;
+    cursor: pointer;
+}
+
+.tooltip {
+    position: relative;
+}
+
+.tooltip-text {
+    display: none;
+    position: absolute;
+    background-color: #333;
+    color: #fff;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.tooltip:hover .tooltip-text {
+    display: block;
+}
+
+table th {
+    background-color: #2c3e50;
+    color: white;
+}
+
+#scroll-to-top {
+    position: fixed;
+    bottom: 130px; /* Tăng khoảng cách từ dưới lên, hiện tại là 80px */
+    right: 20px; /* Khoảng cách từ phải sang */
+    display: none;
+    padding: 10px 15px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease;
+    z-index: 5000;
+}
+
+#scroll-to-top:hover {
+    background-color: #2980b9;
+}
+
+/* Dải màu xám cho phần thời gian và marquee */
+.header-strip {
+    background-color: #2c3e50; /* Màu xám nhạt */
+    padding: 10px;
+    border-radius: 8px; /* Bo góc mềm mại */
+    display: flex;
+    justify-content: space-between; /* Đặt các thành phần ở hai bên */
+    align-items: center; /* Căn giữa theo chiều dọc */
+    margin-bottom: 20px; /* Khoảng cách phía dưới */
+    position: relative; /* Định vị dải màu xám */
+    overflow: hidden; /* Ẩn phần nội dung vượt ra ngoài */
+}
+
+.center-time {
+    font-size: 16px;
+    color: #ffffff;
+    font-weight: bold;
+}
+
+.led-marquee {
+    font-size: 16px;
+    font-weight: bold;
+    white-space: nowrap; /* Giữ văn bản trên cùng một dòng */
+    margin-left: auto; /* Đẩy văn bản sát rìa bên phải */
+    opacity: 0; /* Ban đầu ẩn */
+    animation: fade-blink 5s ease-in-out infinite; /* Áp dụng hiệu ứng hiển thị, nhấp nháy và lặp lại */
+}
+
+/* Hiệu ứng hiển thị dần lên, nhấp nháy, đổi màu, và biến mất */
+@keyframes fade-blink {
+    0% {
+        opacity: 0; /* Bắt đầu với độ mờ hoàn toàn */
+        color: #3498db; /* Màu ban đầu khi ẩn */
+    }
+    20% {
+        opacity: 1; /* Hiển thị rõ */
+        color: #e74c3c; /* Đổi màu sang đỏ khi hiện */
+    }
+    40% {
+        opacity: 0; /* Biến mất để tạo hiệu ứng nhấp nháy */
+        color: #f1c40f; /* Đổi màu sang vàng trong lúc nhấp nháy */
+    }
+    60% {
+        opacity: 1; /* Hiển thị rõ lại */
+        color: #2ecc71; /* Đổi màu sang xanh khi hiển thị lại */
+    }
+    80% {
+        opacity: 0; /* Lại biến mất để tạo thêm hiệu ứng nhấp nháy */
+        color: #9b59b6; /* Đổi màu sang tím trong lúc nhấp nháy */
+    }
+    100% {
+        opacity: 1; /* Kết thúc với việc hiển thị lại */
+        color: #3498db; /* Đổi lại màu xanh dương khi kết thúc */
+    }
+}
+
+/* Dải hiển thị Lịch học hôm nay */
+.schedule-strip {
+    background-color: #373737; /* Màu nền nhạt */
+    padding: 15px;
+    border-radius: 8px; /* Bo góc mềm mại */
+    margin-top: 20px; /* Khoảng cách phía trên */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Bóng đổ nhẹ */
+    text-align: center; /* Căn giữa văn bản */
+}
+
+.schedule-strip h3 {
+    margin: 0;
+    font-size: 18px;
+    color: #ffffff;
+}
+
+.schedule-strip #schedule-details {
+    font-weight: bold;
+    color: #2ecc71; /* Màu xanh lá cho lịch học nếu có */
+}
+
+#schedule-body tr {
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+
+#schedule-body tr.visible {
+    opacity: 1;
+}
+
+/* Hiệu ứng mượt mà cho pop-up */
+.floating-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -60%); /* Dịch chuyển lên một chút khi chưa hiển thị */
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 10000;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out; /* Chuyển tiếp cho hiệu ứng mờ và dịch chuyển */
+    display: none;
+}
+
+/* Hiệu ứng hiển thị */
+.floating-popup.show {
+    display: block;
+    opacity: 1;
+    transform: translate(-50%, -50%); /* Hiển thị ở giữa màn hình */
+}
+
+/* Hiệu ứng ẩn */
+.floating-popup.hide {
+    opacity: 0;
+    transform: translate(-50%, -60%); /* Dịch chuyển lên một chút khi ẩn */
+}
+
+#today-schedule-gif {
+    display: block;
+    margin: 20px auto; /* Căn giữa theo chiều ngang */
+    max-width: 100%; /* Đảm bảo ảnh không vượt quá kích thước của phần tử cha */
+}
+
+#weather {
+    font-size: 16px;
+    color: #ffffff;
+    font-weight: bold;
+    margin-left: 20px;
+    display: flex;
+    align-items: center;
+}
+#weather img {
+    margin-right: 5px;
+}
+
